@@ -8,7 +8,7 @@ edition = "2018"
 
 [features]
 default = ["vendored-zmq"]
-vendored-zmq = ['zmq/vendored']
+vendored-zmq = ["zmq/vendored"]
 
 [dependencies]
 crossbeam-channel = "0.5"

@@ -1,6 +1,6 @@
 use crate::{
-  reactor::AsyncTask,
-  reactor::{ReactorTask, ZmqFuture},
+  reactor::ReactorTask,
+  reactor::{AsyncTask, ZmqFuture},
   Context, SocketType,
 };
 
@@ -15,7 +15,7 @@ assert_impl_all!(Socket: Send, Sync);
 
 impl Context {
   pub async fn socket(&self, socket_type: SocketType) -> Result<Socket, zmq::Error> {
-    let id = ZmqFuture::new(self, socket_type, ReactorTask::Create).await?;
+    let id = ZmqFuture::new(self.as_ref(), socket_type, ReactorTask::Create).await?;
     Ok(Socket {
       context: self.clone(),
       id,
@@ -27,8 +27,7 @@ impl Drop for Socket {
   fn drop(&mut self) {
     self
       .context
-      .0
-      .sender
+      .as_ref()
       .send(ReactorTask::Destroy(AsyncTask::new(self.id)))
       .unwrap()
   }
@@ -36,12 +35,17 @@ impl Drop for Socket {
 
 impl Socket {
   pub async fn bind(&mut self, address: &str) -> Result<(), zmq::Error> {
-    ZmqFuture::new(&self.context, (self.id, address.into()), ReactorTask::Bind).await
+    ZmqFuture::new(
+      self.context.as_ref(),
+      (self.id, address.into()),
+      ReactorTask::Bind,
+    )
+    .await
   }
 
   pub async fn connect(&mut self, address: &str) -> Result<(), zmq::Error> {
     ZmqFuture::new(
-      &self.context,
+      self.context.as_ref(),
       (self.id, address.into()),
       ReactorTask::Connect,
     )
@@ -49,11 +53,16 @@ impl Socket {
   }
 
   pub async fn send(&mut self, messages: Vec<Vec<u8>>) -> Result<(), zmq::Error> {
-    ZmqFuture::new(&self.context, (self.id, messages), ReactorTask::Send).await
+    ZmqFuture::new(
+      self.context.as_ref(),
+      (self.id, messages),
+      ReactorTask::Send,
+    )
+    .await
   }
 
   pub async fn recv(&mut self) -> Result<Vec<Vec<u8>>, zmq::Error> {
-    ZmqFuture::new(&self.context, self.id, ReactorTask::Recv).await
+    ZmqFuture::new(self.context.as_ref(), self.id, ReactorTask::Recv).await
   }
 }
 
