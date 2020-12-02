@@ -1,0 +1,28 @@
+[package]
+name = "aktoer-core"
+version = "0.1.0"
+authors = ["Aleksander Heintz <alxandr@alxandr.me>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+async-std = { version = "1", features = ["attributes"] }
+async-trait = "0.1"
+bytes = "0.6"
+chrono = "0.4"
+dashmap = "3"
+downcast-rs = "1"
+futures = "0.3"
+lazy_static = "1"
+linkme = "0.2"
+rand = { version = "0.7", features = ["small_rng"] }
+seahash = "4"
+serde = "1"
+static_assertions = "1"
+tracing = "0.1"
+aktoer-zmq = { version = "0.1", path = "../zmq" }
+
+[features]
+default = ["vendored-zmq"]
+vendored-zmq = ["aktoer-zmq/vendored-zmq"]

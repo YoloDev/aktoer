@@ -1,6 +1,5 @@
 use crate::{
-  reactor::ReactorTask,
-  reactor::{AsyncTask, ZmqFuture},
+  reactor::{AsyncTask, ReactorTask, ZmqFuture},
   Context, SocketType,
 };
 
