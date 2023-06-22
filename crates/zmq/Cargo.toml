@@ -18,7 +18,7 @@ indexmap = "1"
 pin-project = "1"
 static_assertions = "1"
 tracing = "0.1"
-zmq = "0.9"
+zmq = "0.10"
 
 [dev-dependencies]
 async-std = { version = "1", features = ["attributes"] }
